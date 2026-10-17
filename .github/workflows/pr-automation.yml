@@ -108,7 +108,6 @@ jobs:
     name: testing-suite
     runs-on: ubuntu-latest
     if: github.event.pull_request.head.repo.full_name == github.repository
-    needs: code-quality
     outputs:
       test-status: ${{ steps.test.outputs.status }}
       coverage-status: ${{ steps.coverage.outputs.status }}
