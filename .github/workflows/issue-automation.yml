@@ -187,14 +187,9 @@ jobs:
               filteredLabels.push('first-time-contributor');
             }
 
-            // Add priority labels
-            const priorityLabels = ['priority-critical', 'priority-high', 'priority-medium', 'priority-low'];
-            priorityLabels.forEach(pl => {
-              filteredLabels.push(pl);
-            });
-
             // Set milestone for priority-high and priority-critical
-            const hasHighPriority = ['priority-high', 'priority-critical'].some(pl => currentLabels.includes(pl));
+            const priorityLabels = currentLabels.filter(l => l.startsWith('priority-'));
+            const hasHighPriority = priorityLabels.some(pl => pl === 'priority-high' || pl === 'priority-critical');
 
             if (hasHighPriority) {
               // Check if v1.0.0 milestone exists
@@ -262,12 +257,12 @@ jobs:
 
             const hasAutoResponse = existingComments.data.some(c => 
               c.user.login === 'github-actions[bot]' && 
-              c.body.includes('Bug Report Guidelines') || 
-              c.body.includes('Feature Request Process') ||
-              (c.body.includes('first-time-contributor') || c.body.includes('Welcome'))
+              (c.body.includes('Bug Report Guidelines') || 
+               c.body.includes('Feature Request Process') ||
+               c.body.includes('first-time-contributor') || c.body.includes('Welcome'))
             );
 
-            if (!hasAutoResponse && !issue.title.startsWith('[SUBTASK]') && issue.body && !issue.body.includes('👋 Welcome')) {
+            if (!hasAutoResponse && !issue.title.startsWith('[SUBTASK]')) {
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
