@@ -1,0 +1,19 @@
+{
+  "name": "mcpmark-cicd",
+  "version": "1.0.0",
+  "description": "A Node.js project with deployment status workflow",
+  "main": "index.js",
+  "scripts": {
+    "lint": "echo 'Linting...' && exit 0",
+    "test": "echo 'Running tests...' && exit 0",
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "keywords": ["nodejs", "ci-cd", "deployment"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^8.0.0"
+  }
+}
