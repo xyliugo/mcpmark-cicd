@@ -1,25 +1,27 @@
-// This file demonstrates proper ESLint compliance
-const greeting = 'Hello';
-const name = 'World';
+// This file demonstrates ESLint violations
+const greeting = "Hello"
+const name = "World"
 
-console.log(`${greeting}, ${name}!`);
+console.log(`${greeting}, ${name}!`)
 
 function sayHello(user) {
-  const message = `Hello, ${user}`;
-  console.log(message);
-  return message;
+  const message = `Hello, ${user}`
+  console.log(message)
+  return message
 }
+
+const unusedVariable = "This will never be used"
 
 const user = {
-  name: 'John',
-  age: 30,
-};
-
-console.log(user);
-
-function calculate(x, y) {
-  const result = x + y;
-  return result;
+  name: "John",
+  age: 30
 }
 
-calculate(5, 3);
+console.log(user)
+
+function calculate(x, y) {
+  const result = x + y
+  return result
+}
+
+calculate(5, 3)
