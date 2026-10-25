@@ -1,27 +1,25 @@
-// This file contains intentional linting violations for testing
-const unusedVariable = "This variable is never used";
-let anotherUnused = 123;
+// This file demonstrates proper ESLint compliance
+const greeting = 'Hello';
+const name = 'World';
 
-console.log("Hello, World!");
+console.log(`${greeting}, ${name}!`);
 
-const greeting = "Hello"
-
-function sayHello(name) {
-  let message = "Hello, " + name
-  console.log(message)
-  return message
+function sayHello(user) {
+  const message = `Hello, ${user}`;
+  console.log(message);
+  return message;
 }
 
 const user = {
-  name: "John",
-  age: 30
-}
+  name: 'John',
+  age: 30,
+};
 
-console.log(user)
+console.log(user);
 
 function calculate(x, y) {
-  let result = x + y
-  return result
+  const result = x + y;
+  return result;
 }
 
-calculate(5, 3)
+calculate(5, 3);
