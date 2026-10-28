@@ -16,7 +16,7 @@ env:
 jobs:
   # Job 1: Code Quality Check - runs in parallel with all other jobs
   code-quality:
-    name: 'Code Quality'
+    name: code-quality
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -54,23 +54,23 @@ jobs:
             const prettierOutcome = '${{ steps.prettier.outcome }}';
             const prNumber = context.issue.number || context.payload.pull_request.number;
             
-            const report = \`### Code Quality Report
-            
-            This is an automated code quality assessment for the pull request.
-            
-            **ESLint Results:** \`${eslintOutcome === 'success' ? '✅ PASS' : '❌ FAIL'}\`
-            The ESLint linter has checked the code for potential issues and style violations.
-            
-            **Prettier Results:** \`${prettierOutcome === 'success' ? '✅ PASS' : '❌ FAIL'}\`
-            Prettier has verified code formatting consistency across the project.
-            
-            **Code Quality Summary:**
-            - ESLint: \`${eslintOutcome}\`
-            - Prettier: \`${prettierOutcome}\`
-            
-            Please ensure all code quality checks pass before merging.
-            \`;
-            
+            const report = `### Code Quality Report
+
+This is an automated code quality assessment for the pull request.
+
+**ESLint Results:** \`${eslintOutcome === 'success' ? '✅ PASS' : '❌ FAIL'}\`
+The ESLint linter has checked the code for potential issues and style violations.
+
+**Prettier Results:** \`${prettierOutcome === 'success' ? '✅ PASS' : '❌ FAIL'}\`
+Prettier has verified code formatting consistency across the project.
+
+**Code Quality Summary:**
+- ESLint: \`${eslintOutcome}\`
+- Prettier: \`${prettierOutcome}\`
+
+Please ensure all code quality checks pass before merging.
+`;
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -80,7 +80,7 @@ jobs:
 
   # Job 2: Testing Suite - runs in parallel with all other jobs
   testing-suite:
-    name: 'Testing Suite'
+    name: testing-suite
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -130,29 +130,29 @@ jobs:
             const status = '${{ steps.coverage.outputs.test_status }}';
             const prNumber = context.issue.number || context.payload.pull_request.number;
             
-            const report = \`### Test Coverage Report
-            
-            This is an automated test coverage analysis for the pull request.
-            
-            **Test Execution Status:** ${status === 'completed' ? '✅ Run Completed' : '⚠️ Run Completed with Issues'}
-            
-            **Coverage Summary:**
-            - Overall Coverage: \`${coverage}%\`
-            - Test Suite Status: Completed
-            
-            **Coverage Details:**
-            - Line Coverage: Available in artifacts
-            - Branch Coverage: Available in artifacts
-            - Function Coverage: Available in artifacts
-            
-            **Artifacts:**
-            - Coverage Report: coverage-report-${{ github.run_number }}
-            - LCOV Report: Available
-            - JUnit Report: Available
-            
-            Please review test results and ensure adequate coverage before merging.
-            \`;
-            
+            const report = `### Test Coverage Report
+
+This is an automated test coverage analysis for the pull request.
+
+**Test Execution Status:** ${status === 'completed' ? '✅ Run Completed' : '⚠️ Run Completed with Issues'}
+
+**Coverage Summary:**
+- Overall Coverage: \`${coverage}%\`
+- Test Suite Status: Completed
+
+**Coverage Details:**
+- Line Coverage: Available in artifacts
+- Branch Coverage: Available in artifacts
+- Function Coverage: Available in artifacts
+
+**Artifacts:**
+- Coverage Report: coverage-report-${{ github.run_number }}
+- LCOV Report: Available
+- JUnit Report: Available
+
+Please review test results and ensure adequate coverage before merging.
+`;
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -162,7 +162,7 @@ jobs:
 
   # Job 3: Security Scan - runs in parallel with all other jobs
   security-scan:
-    name: 'Security Scan'
+    name: security-scan
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -216,32 +216,32 @@ jobs:
             const secretsStatus = '${{ steps.secrets-scan.outcome }}';
             const prNumber = context.issue.number || context.payload.pull_request.number;
             
-            const report = \`### Security Scan Report
-            
-            This is an automated security assessment for the pull request.
-            
-            **Dependencies Security:**
-            **Vulnerabilities:** \`${auditStatus === 'success' ? '✅ No critical vulnerabilities found' : '⚠️ Vulnerabilities detected, review required'}\`
-            Dependency vulnerabilities have been audited using npm audit.
-            
-            **Secrets Detection:**
-            **Secrets in Code:** \`${secretsStatus === 'success' ? '✅ No secrets detected' : '⚠️ Potential secrets found'}\`
-            A comprehensive scan for hardcoded secrets was performed on code changes.
-            
-            **Security Analysis:**
-            - Dependency Audit: Completed
-            - Secrets Scan: Completed
-            - Code Analysis: Performed
-            
-            **Recommendations:**
-            1. Review any dependency vulnerabilities reported by npm audit
-            2. Ensure no API keys, passwords, or tokens are hardcoded
-            3. Use environment variables for sensitive configuration
-            4. Consider using a secrets management solution
-            
-            Security scan completed at: ${new Date().toISOString()}
-            \`;
-            
+            const report = `### Security Scan Report
+
+This is an automated security assessment for the pull request.
+
+**Dependencies Security:**
+**Vulnerabilities:** \`${auditStatus === 'success' ? '✅ No critical vulnerabilities found' : '⚠️ Vulnerabilities detected, review required'}\`
+Dependency vulnerabilities have been audited using npm audit.
+
+**Secrets Detection:**
+**Secrets in Code:** \`${secretsStatus === 'success' ? '✅ No secrets detected' : '⚠️ Potential secrets found'}\`
+A comprehensive scan for hardcoded secrets was performed on code changes.
+
+**Security Analysis:**
+- Dependency Audit: Completed
+- Secrets Scan: Completed
+- Code Analysis: Performed
+
+**Recommendations:**
+1. Review any dependency vulnerabilities reported by npm audit
+2. Ensure no API keys, passwords, or tokens are hardcoded
+3. Use environment variables for sensitive configuration
+4. Consider using a secrets management solution
+
+Security scan completed at: ${new Date().toISOString()}
+`;
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -251,7 +251,7 @@ jobs:
 
   # Job 4: Build Validation - runs in parallel with all other jobs
   build-validation:
-    name: 'Build Validation'
+    name: build-validation
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -334,32 +334,32 @@ jobs:
             const previewCreated = '${{ steps.preview.outputs.preview_created }}';
             const prNumber = context.issue.number || context.payload.pull_request.number;
             
-            const report = \`### Build Validation
-            
-            This is an automated build validation report for the pull request.
-            
-            **Build Status:** ${buildCompleted === 'true' ? '✅ SUCCESS' : '⚠️ COMPLETED WITH WARNINGS'}
-            The application build was executed successfully.
-            
-            **Endpoint Validation:** ${endpointStatus === 'success' ? '✅ PASS' : '⚠️ REVIEW NEEDED'}
-            Application endpoints have been validated through the build process.
-            
-            **Deployment Preview:** ${previewCreated === 'true' ? '✅ GENERATED' : '⚠️ PENDING'}
-            Deployment preview artifacts have been created and are available.
-            
-            **Build Details:**
-            - Build Execution: Completed
-            - Node Version: ${{ env.NODE_VERSION }}
-            - Artifacts: Generated
-            
-            **Preview Artifacts:**
-            - Deployment Preview: Available
-            - Manifest: Created
-            - Artifacts Location: Repository artifacts
-            
-            Please review the build output and ensure all functionality is working as expected.
-            \`;
-            
+            const report = `### Build Validation
+
+This is an automated build validation report for the pull request.
+
+**Build Status:** ${buildCompleted === 'true' ? '✅ SUCCESS' : '⚠️ COMPLETED WITH WARNINGS'}
+The application build was executed successfully.
+
+**Endpoint Validation:** ${endpointStatus === 'success' ? '✅ PASS' : '⚠️ REVIEW NEEDED'}
+Application endpoints have been validated through the build process.
+
+**Deployment Preview:** ${previewCreated === 'true' ? '✅ GENERATED' : '⚠️ PENDING'}
+Deployment preview artifacts have been created and are available.
+
+**Build Details:**
+- Build Execution: Completed
+- Node Version: ${{ env.NODE_VERSION }}
+- Artifacts: Generated
+
+**Preview Artifacts:**
+- Deployment Preview: Available
+- Manifest: Created
+- Artifacts Location: Repository artifacts
+
+Please review the build output and ensure all functionality is working as expected.
+`;
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
