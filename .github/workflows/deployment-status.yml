@@ -319,7 +319,7 @@ VERIFYEOF
 
       - name: Create rollback documentation
         run: |
-          cat > rollback-artifacts/ROLLBACK.md << 'DOCEOF'
+          cat > rollback-artifacts/ROLLBACK.md << DOCEOF
 # Rollback Documentation for mcpmark-cicd
 
 ## Overview
