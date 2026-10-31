@@ -85,7 +85,7 @@ jobs:
 
   task-breakdown:
     runs-on: ubuntu-latest
-    if: github.event_name == 'issues' && github.event.issue.labels.some(l => l.name === 'epic')
+    if: github.event_name == 'issues' && github.event.issue.title.toLowerCase().includes('epic')
     needs: [issue-triage]
     steps:
       - name: Create sub-issues for epic
