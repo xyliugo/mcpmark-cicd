@@ -1,4 +1,5 @@
-name: Issue Automation
+name: Issue Management Automation
+
 on:
   issues:
     types: [opened, labeled]
@@ -13,141 +14,24 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const labels = [
-              { name: 'bug', color: 'd73a4a', description: 'Something isn\'t working' },
-              { name: 'enhancement', color: 'a2eeef', description: 'New feature or request' },
-              { name: 'epic', color: 'd22128', description: 'Large feature requiring multiple sub-tasks' },
-              { name: 'maintenance', color: 'fbff92', description: 'Maintenance and housekeeping tasks' },
-              { name: 'priority-critical', color: 'b60205', description: 'Critical priority issue' },
-              { name: 'priority-high', color: 'd57600', description: 'High priority issue' },
-              { name: 'priority-medium', color: '0052cc', description: 'Medium priority issue' },
-              { name: 'priority-low', color: '5319e7', description: 'Low priority issue' },
-              { name: 'needs-triage', color: '0e8a16', description: 'Needs to be reviewed by maintainers' },
-              { name: 'needs-review', color: 'b3db9d', description: 'Awaiting review from maintainers' },
-              { name: 'first-time-contributor', color: '0366d6', description: 'Issue created by first-time contributor' }
+            const labelNames = [
+              'bug', 'enhancement', 'epic', 'maintenance',
+              'priority-critical', 'priority-high', 'priority-medium', 'priority-low',
+              'needs-triage', 'needs-review', 'first-time-contributor'
             ];
 
-            // Try to create each label (it will fail if it already exists)
-            try {
-              await github.rest.issues.createLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: 'bug',
-                color: 'd73a4a',
-                description: 'Something isn\'t working'
-              });
-            } catch (e) {
-              if (e.status !== 422) throw e;
-            }
-            try {
-              await github.rest.issues.createLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: 'enhancement',
-                color: 'a2eeef',
-                description: 'New feature or request'
-              });
-            } catch (e) {
-              if (e.status !== 422) throw e;
-            }
-            try {
-              await github.rest.issues.createLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: 'epic',
-                color: 'd22128',
-                description: 'Large feature requiring multiple sub-tasks'
-              });
-            } catch (e) {
-              if (e.status !== 422) throw e;
-            }
-            try {
-              await github.rest.issues.createLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: 'maintenance',
-                color: 'fbff92',
-                description: 'Maintenance and housekeeping tasks'
-              });
-            } catch (e) {
-              if (e.status !== 422) throw e;
-            }
-            try {
-              await github.rest.issues.createLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: 'priority-critical',
-                color: 'b60205',
-                description: 'Critical priority issue'
-              });
-            } catch (e) {
-              if (e.status !== 422) throw e;
-            }
-            try {
-              await github.rest.issues.createLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: 'priority-high',
-                color: 'd57600',
-                description: 'High priority issue'
-              });
-            } catch (e) {
-              if (e.status !== 422) throw e;
-            }
-            try {
-              await github.rest.issues.createLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: 'priority-medium',
-                color: '0052cc',
-                description: 'Medium priority issue'
-              });
-            } catch (e) {
-              if (e.status !== 422) throw e;
-            }
-            try {
-              await github.rest.issues.createLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: 'priority-low',
-                color: '5319e7',
-                description: 'Low priority issue'
-              });
-            } catch (e) {
-              if (e.status !== 422) throw e;
-            }
-            try {
-              await github.rest.issues.createLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: 'needs-triage',
-                color: '0e8a16',
-                description: 'Needs to be reviewed by maintainers'
-              });
-            } catch (e) {
-              if (e.status !== 422) throw e;
-            }
-            try {
-              await github.rest.issues.createLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: 'needs-review',
-                color: 'b3db9d',
-                description: 'Awaiting review from maintainers'
-              });
-            } catch (e) {
-              if (e.status !== 422) throw e;
-            }
-            try {
-              await github.rest.issues.createLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: 'first-time-contributor',
-                color: '0366d6',
-                description: 'Issue created by first-time contributor'
-              });
-            } catch (e) {
-              if (e.status !== 422) throw e;
+            for (const labelName of labelNames) {
+              try {
+                await github.rest.issues.createLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: labelName,
+                  color: '0e8a16',
+                  description: 'Issue management label'
+                });
+              } catch (e) {
+                if (e.status !== 422) throw e;
+              }
             }
 
       - name: Triage issue
@@ -159,7 +43,6 @@ jobs:
             const title = issue.title.toLowerCase();
             const body = (issue.body || '').toLowerCase();
 
-            // Define labels to add
             const labelsToAdd = ['needs-triage'];
 
             // Add category labels based on title (case-insensitive)
@@ -174,29 +57,25 @@ jobs:
             }
 
             // Determine priority (highest priority wins)
-            // Priority order: critical > high > medium > low
-            let priority = 'priority-medium'; // default
+            let priority = 'priority-medium';
 
             const criticalKeywords = ['critical', 'urgent', 'production', 'outage'];
             const highKeywords = ['important', 'high', 'blocking'];
             const mediumKeywords = ['medium', 'normal'];
             const lowKeywords = ['low', 'nice-to-have', 'minor'];
 
-            let foundCritical = criticalKeywords.some(k => title.includes(k) || body.includes(k));
-            let foundHigh = highKeywords.some(k => title.includes(k) || body.includes(k));
-            let foundLow = lowKeywords.some(k => title.includes(k) || body.includes(k));
+            const textForSearch = title + ' ' + body;
 
-            if (foundCritical) {
+            if (criticalKeywords.some(k => textForSearch.includes(k))) {
               priority = 'priority-critical';
-            } else if (foundHigh) {
+            } else if (highKeywords.some(k => textForSearch.includes(k))) {
               priority = 'priority-high';
-            } else if (foundLow) {
+            } else if (lowKeywords.some(k => textForSearch.includes(k))) {
               priority = 'priority-low';
             }
 
             labelsToAdd.push(priority);
 
-            // Add all labels at once
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -218,7 +97,6 @@ jobs:
             const title = issue.title;
             const parentNumber = issue.number;
 
-            // Task names
             const tasks = [
               { name: 'Requirements Analysis' },
               { name: 'Design and Architecture' },
@@ -226,11 +104,12 @@ jobs:
               { name: 'Testing and Documentation' }
             ];
 
-            // Create sub-issues
+            const createdSubIssues = [];
+
             for (let i = 0; i < tasks.length; i++) {
               const subIssueTitle = `[SUBTASK] ${title} - Task ${i + 1}: ${tasks[i].name}`;
               const subIssueBody = `This is an automated sub-issue for Epic: ${title}\n\nRelated to #${parentNumber}`;
-              
+
               const newIssue = await github.rest.issues.create({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -239,26 +118,17 @@ jobs:
                 labels: ['enhancement', 'needs-review']
               });
 
-              const subIssueNumber = newIssue.data.number;
-              console.log(`Created sub-issue #${subIssueNumber}: ${subIssueTitle}`);
+              createdSubIssues.push(newIssue.data);
+              console.log(`Created sub-issue #${newIssue.data.number}: ${subIssueTitle}`);
             }
 
-            // Get the sub-issues we just created
-            const subIssuesResponse = await github.rest.issues.listForRepo({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: parentNumber,
-              state: 'open'
-            });
-
-            // Sort by created_at to get the first 4
-            const subIssues = subIssuesResponse.data
-              .filter(i => i.title.startsWith('[SUBTASK]'))
-              .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-              .slice(0, 4);
+            // Sort by creation order (they should be in order)
+            const sortedSubIssues = createdSubIssues.sort((a, b) => 
+              new Date(a.created_at) - new Date(b.created_at)
+            ).slice(0, 4);
 
             // Update parent issue with epic tasks checklist
-            const checklistLines = subIssues.map((si, index) => {
+            const checklistLines = sortedSubIssues.map((si, index) => {
               const taskIndex = index + 1;
               const taskName = tasks[index].name;
               return `- [ ] #${si.number} - Task ${taskIndex}: ${taskName}`;
@@ -266,7 +136,6 @@ jobs:
 
             const checklist = `## Epic Tasks\n\n${checklistLines.join('\n')}`;
 
-            // Get current issue body
             const currentIssue = await github.rest.issues.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -274,8 +143,8 @@ jobs:
             });
 
             const existingBody = currentIssue.data.body || '';
-            const updatedBody = existingBody === '' 
-              ? checklist 
+            const updatedBody = existingBody === ''
+              ? checklist
               : existingBody + '\n\n' + checklist;
 
             await github.rest.issues.update({
@@ -297,44 +166,45 @@ jobs:
           script: |
             const issue = context.payload.issue;
             const title = issue.title.toLowerCase();
-            const body = (issue.body || '').toLowerCase();
             const author = issue.user.login;
+            const currentIssueNumber = issue.number;
 
             // Check if this is the author's first issue in this repo
-            // Get all issues and count how many were created by this user (excluding github-actions)
             const allIssues = await github.rest.search.issuesAndPullRequests({
               q: `repo:${context.repo.owner}/${context.repo.repo} is:issue author:${author}`
             });
 
             let userIssueCount = 0;
             allIssues.data.items.forEach(item => {
-              if (item.issue && item.issue.user.login !== 'github-actions[bot]') {
+              if (item.issue && 
+                  item.issue.user.login !== 'github-actions[bot]' && 
+                  item.issue.number !== currentIssueNumber) {
                 userIssueCount++;
               }
             });
 
             const isFirstTimeContributor = userIssueCount === 0;
 
-            // Get current labels
-            const currentLabels = issue.labels.map(l => l.name);
-
-            // Remove needs-triage label
-            const filteredLabels = currentLabels.filter(l => l !== 'needs-triage');
-
-            // Add needs-review label
-            filteredLabels.push('needs-review');
-
-            // Add first-time-contributor label if applicable
+            // Build new labels list
+            let newLabels = issue.labels.map(l => l.name);
+            newLabels = newLabels.filter(l => l !== 'needs-triage');
+            newLabels.push('needs-review');
             if (isFirstTimeContributor) {
-              filteredLabels.push('first-time-contributor');
+              newLabels.push('first-time-contributor');
             }
 
-            // Set milestone for priority-high and priority-critical
-            const priorityLabels = currentLabels.filter(l => l.startsWith('priority-'));
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: currentIssueNumber,
+              labels: newLabels
+            });
+
+            // Set milestone for priority-high and priority-critical issues
+            const priorityLabels = newLabels.filter(l => l.startsWith('priority-'));
             const hasHighPriority = priorityLabels.some(pl => pl === 'priority-high' || pl === 'priority-critical');
 
             if (hasHighPriority) {
-              // Check if v1.0.0 milestone exists
               const milestones = await github.rest.issues.listMilestones({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -344,7 +214,6 @@ jobs:
               let milestone = milestones.data.find(m => m.title === 'v1.0.0');
 
               if (!milestone) {
-                // Create the milestone
                 milestone = await github.rest.issues.createMilestone({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
@@ -353,11 +222,10 @@ jobs:
                 });
               }
 
-              // Assign milestone to issue
               await github.rest.issues.setMilestone({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: issue.number,
+                issue_number: currentIssueNumber,
                 milestone: milestone.number
               });
             }
@@ -394,21 +262,21 @@ jobs:
             const existingComments = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: issue.number
+              issue_number: currentIssueNumber
             });
 
-            const hasAutoResponse = existingComments.data.some(c => 
-              c.user.login === 'github-actions[bot]' && 
-              (c.body.includes('Bug Report Guidelines') || 
+            const hasAutoResponse = existingComments.data.some(c =>
+              c.user.login === 'github-actions[bot]' &&
+              (c.body.includes('Bug Report Guidelines') ||
                c.body.includes('Feature Request Process') ||
-               c.body.includes('first-time-contributor') || c.body.includes('Welcome'))
+               c.body.includes('Maintenance Guidelines'))
             );
 
             if (!hasAutoResponse && !issue.title.startsWith('[SUBTASK]')) {
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: issue.number,
+                issue_number: currentIssueNumber,
                 body: commentBody
               });
             }
