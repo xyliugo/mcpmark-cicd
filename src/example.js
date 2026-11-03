@@ -1,5 +1,4 @@
 function calculateTotal(items) {
-    console.log('Calculating total...');
     const total = items.reduce((sum, item) => sum + item.price, 0);
     return total;
 }
