@@ -1,5 +1,4 @@
 name: Code Linting
-
 on:
   push:
     branches:
@@ -11,15 +10,14 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
@@ -27,5 +25,6 @@ jobs:
       - name: Install ESLint globally
         run: npm install -g eslint@8
 
-      - name: Run ESLint on src/ directories
+      - name: Run ESLint
         run: npx eslint src/**/*.js
+        continue-on-error: false
