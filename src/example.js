@@ -4,6 +4,5 @@ function calculateTotal(items) {
 }
 
 const greeting = 'Hello World';
-const unusedVariable = 'I am not used';
 
 console.log(greeting);
