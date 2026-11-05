@@ -1,5 +1,7 @@
 name: Deployment Status
 
+# Updated for PR creation - workflow implementation verified
+
 on:
   push:
     branches:
@@ -79,7 +81,7 @@ jobs:
 
 ### Status
 
-🟡 **In Progress**
+\ud83d\udfe1 **In Progress**
 
 ---
 *This issue was automatically created by the Deployment Status workflow.*`,
@@ -102,11 +104,11 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
-              body: `## ✅ Pre-deployment checks completed
+              body: `## \u2705 Pre-deployment checks completed
 
 ### Check Results
-- **Linting**: ✅ Passed
-- **Tests**: ✅ Passed
+- **Linting**: \u2705 Passed
+- **Tests**: \u2705 Passed
 
 ### Deployment Details
 - Previous Commit: \`${previousSha}\`
@@ -162,7 +164,7 @@ PACKAGE_VERSION="${PACKAGE_VERSION:-1.0.0}"
 
 # Error handling function
 error_handler() {
-    echo "❌ Error occurred at line $1"
+    echo "\u274c Error occurred at line $1"
     echo "Rollback failed. Please check the logs."
     exit 1
 }
@@ -170,40 +172,40 @@ error_handler() {
 trap 'error_handler $LINENO' ERR
 
 # Validate environment
-echo "🔍 Validating environment..."
+echo "\ud83d\udd0d Validating environment..."
 if [ "$PREVIOUS_COMMIT" = "n/a" ]; then
-    echo "⚠️  Previous commit SHA not provided, will attempt local rollback"
+    echo "\u26a0\ufe0f  Previous commit SHA not provided, will attempt local rollback"
 else
-    echo "✅ Previous commit SHA: $PREVIOUS_COMMIT"
+    echo "\u2705 Previous commit SHA: $PREVIOUS_COMMIT"
 fi
 
 # Step 1: Create backup of current state
 echo ""
-echo "📦 Step 1: Creating backup of current state..."
+echo "\ud83d\udce6 Step 1: Creating backup of current state..."
 BACKUP_DIR="backup_$(date +%Y%m%d_%H%M%S)"
 mkdir -p "$BACKUP_DIR"
-cp -r . "$BACKUP_DIR/current_state/" 2>/dev/null || echo "⚠️  Backup directory created (no files to copy)"
-echo "✅ Backup created: $BACKUP_DIR"
+cp -r . "$BACKUP_DIR/current_state/" 2>/dev/null || echo "\u26a0\ufe0f  Backup directory created (no files to copy)"
+echo "\u2705 Backup created: $BACKUP_DIR"
 
 # Step 2: Reset to previous commit (if available)
 echo ""
-echo "🔄 Step 2: Attempting to reset to previous commit..."
+echo "\ud83d\udd04 Step 2: Attempting to reset to previous commit..."
 if [ "$PREVIOUS_COMMIT" != "n/a" ]; then
     git checkout "$PREVIOUS_COMMIT" 2>/dev/null || {
-        echo "⚠️  Failed to checkout previous commit (may not exist in local history)"
-        echo "💡 Tip: Run 'git fetch --all' and try again"
+        echo "\u26a0\ufe0f  Failed to checkout previous commit (may not exist in local history)"
+        echo "\ud83d\udca1 Tip: Run 'git fetch --all' and try again"
     } || true
 fi
 
 # Step 3: Reinstall dependencies
 echo ""
-echo "📦 Step 3: Reinstalling dependencies..."
-npm ci 2>/dev/null || npm install 2>/dev/null || echo "⚠️  Dependencies installation skipped or failed"
-echo "✅ Dependencies processed"
+echo "\ud83d\udce6 Step 3: Reinstalling dependencies..."
+npm ci 2>/dev/null || npm install 2>/dev/null || echo "\u26a0\ufe0f  Dependencies installation skipped or failed"
+echo "\u2705 Dependencies processed"
 
 # Step 4: Verify rollback
 echo ""
-echo "✅ Step 4: Rollback verification completed"
+echo "\u2705 Step 4: Rollback verification completed"
 
 if [ "$PREVIOUS_COMMIT" != "n/a" ]; then
     echo ""
@@ -217,7 +219,7 @@ if [ "$PREVIOUS_COMMIT" != "n/a" ]; then
 fi
 
 echo ""
-echo "✅ Rollback script completed"
+echo "\u2705 Rollback script completed"
 EOF
           chmod +x rollback.sh
           echo "script_created=true" >> $GITHUB_OUTPUT
@@ -230,19 +232,19 @@ EOF
           # Backup package.json
           if [ -f "package.json" ]; then
             cp package.json rollback-artifacts/config-backup/package.json
-            echo "✅ package.json backed up"
+            echo "\u2705 package.json backed up"
           else
             echo "{}" > rollback-artifacts/config-backup/package.json
-            echo "⚠️  Created empty package.json backup"
+            echo "\u26a0\ufe0f  Created empty package.json backup"
           fi
 
           # Backup package-lock.json if exists
           if [ -f "package-lock.json" ]; then
             cp package-lock.json rollback-artifacts/config-backup/package-lock.json
-            echo "✅ package-lock.json backed up"
+            echo "\u2705 package-lock.json backed up"
           else
             echo "{}" > rollback-artifacts/config-backup/package-lock.json
-            echo "⚠️  Created empty package-lock.json backup"
+            echo "\u26a0\ufe0f  Created empty package-lock.json backup"
           fi
 
           # Create environment templates
@@ -253,7 +255,7 @@ PORT=3000
 API_URL=http://localhost:3000
 LOG_LEVEL=info
 ENVEOF
-          echo "✅ .env.template created"
+          echo "\u2705 .env.template created"
 
           cat > rollback-artifacts/config-backup/.env.example << 'EXAMPLEEOF'
 # Example Configuration for mcpmark-cicd
@@ -268,7 +270,7 @@ PORT=3000
 # Optional
 API_URL=http://localhost:3000
 EXAMPLEEOF
-          echo "✅ .env.example created"
+          echo "\u2705 .env.example created"
 
       - name: Create dependency verification script
         run: |
@@ -286,19 +288,19 @@ check_package() {
     local package=$1
     local version=$2
     
-    echo "🔍 Checking: $package@$version"
+    echo "\ud83d\udd0d Checking: $package@$version"
     
     if npm list "$package" &>/dev/null; then
         local actual_version=$(npm list "$package" --depth=0 | head -1 | sed 's/.*@//')
-        echo "   ✅ Installed version: $actual_version"
+        echo "   \u2705 Installed version: $actual_version"
         return 0
     else
-        echo "   ⚠️  Package not installed: $package"
+        echo "   \u26a0\ufe0f  Package not installed: $package"
         return 1
     fi
 }
 
-echo "📦 Starting dependency verification..."
+echo "\ud83d\udce6 Starting dependency verification..."
 echo ""
 
 # Main packages
@@ -306,15 +308,15 @@ check_package "eslint" "^8.0.0" || true
 
 # Node.js version check
 echo ""
-echo "🔧 Environment check:"
+echo "\ud83d\udd27 Environment check:"
 echo "   Node.js: $(node --version)"
 echo "   npm: $(npm --version)"
 
 echo ""
-echo "✅ Dependency verification completed"
+echo "\u2705 Dependency verification completed"
 VERIFYEOF
           chmod +x rollback-artifacts/verify-dependencies.sh
-          echo "✅ Dependency verification script created"
+          echo "\u2705 Dependency verification script created"
 
       - name: Create rollback documentation
         run: |
@@ -415,7 +417,7 @@ If you encounter issues during rollback, contact the development team with:
 ---
 *This documentation was auto-generated by the Deployment Status workflow.*
 DOCEOF
-          echo "✅ Rollback documentation created"
+          echo "\u2705 Rollback documentation created"
 
       - name: Create compressed rollback package
         id: create-artifact
@@ -442,8 +444,8 @@ DOCEOF
           echo "sha256=$SHA256" >> $GITHUB_OUTPUT
           echo "artifact-name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
           
-          echo "✅ Compressed package created: ${PACKAGE_NAME}.tar.gz"
-          echo "✅ SHA256: $SHA256"
+          echo "\u2705 Compressed package created: ${PACKAGE_NAME}.tar.gz"
+          echo "\u2705 SHA256: $SHA256"
 
       - name: Upload rollback artifacts
         uses: actions/upload-artifact@v4
@@ -480,9 +482,9 @@ DOCEOF
             const artifactName = 'rollback-package-' + currentCommit;
             const artifactSha256 = '${{ env.ARTIFACT_SHA256 }}';
             
-            const checkmarks = '✅';
+            const checkmarks = '\u2705';
             
-            const comment = `# 🔄 Rollback Plan Ready
+            const comment = `# \ud83d\udd04 Rollback Plan Ready
 
 ## Previous and Current Commits
 
@@ -593,7 +595,7 @@ chmod +x rollback.sh
             const artifactSha256 = '${{ needs.rollback-preparation.outputs.artifact_sha256 }}';
             const version = '${{ needs.pre-deployment.outputs.package_version }}';
             
-            const comment = `# 🎉 Deployment Completed Successfully
+            const comment = `# \ud83c\udf89 Deployment Completed Successfully
 
 ## Deployment Summary
 
@@ -605,9 +607,9 @@ chmod +x rollback.sh
 
 ## Workflow Status
 
-✅ **pre-deployment**: Completed - All quality checks passed
-✅ **rollback-preparation**: Completed - Rollback artifacts ready
-✅ **post-deployment**: Completed - Deployment finalized
+\u2705 **pre-deployment**: Completed - All quality checks passed
+\u2705 **rollback-preparation**: Completed - Rollback artifacts ready
+\u2705 **post-deployment**: Completed - Deployment finalized
 
 ## Rollback Artifact Details
 
