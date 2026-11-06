@@ -70,6 +70,8 @@ jobs:
               priority = 'priority-critical';
             } else if (highKeywords.some(k => textForSearch.includes(k))) {
               priority = 'priority-high';
+            } else if (mediumKeywords.some(k => textForSearch.includes(k))) {
+              priority = 'priority-medium';
             } else if (lowKeywords.some(k => textForSearch.includes(k))) {
               priority = 'priority-low';
             }
